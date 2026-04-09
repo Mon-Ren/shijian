@@ -40,15 +40,17 @@ code{font-family:"SF Mono","Fira Code","JetBrains Mono",monospace}
 .hero-content{position:relative;z-index:2;max-width:720px}
 .hero-star{font-size:3.5rem;margin-bottom:1.5rem;filter:drop-shadow(0 0 30px rgba(255,222,0,.4));animation:starPulse 3s ease-in-out infinite}
 @keyframes starPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
-.hero h1{font-size:clamp(4rem,12vw,8rem);font-weight:900;letter-spacing:.06em;color:var(--red);text-shadow:0 0 80px var(--red-glow);line-height:1;margin-bottom:.5rem}
-.hero .pinyin{font-size:clamp(.85rem,1.8vw,1.1rem);color:var(--muted);letter-spacing:.25em;margin-bottom:.6rem}
-.hero .tagline{font-size:clamp(1.4rem,3.5vw,2.2rem);font-weight:700;color:var(--gold);letter-spacing:.15em;margin-bottom:2rem}
-.hero .quote{max-width:480px;margin:0 auto 2rem;font-size:.95rem;color:var(--muted);font-style:italic;border-left:2px solid var(--red);padding-left:1rem;text-align:left}
-.hero .desc{max-width:560px;margin:0 auto 3rem;color:var(--muted-bright);font-size:1.05rem;line-height:1.8}
+.hero h1{font-size:clamp(4rem,12vw,8rem);font-weight:900;letter-spacing:.06em;color:var(--red);text-shadow:0 0 80px var(--red-glow);line-height:1;margin-bottom:.5rem;animation:fadeUp .8s .5s both}
+.hero .pinyin{font-size:clamp(.85rem,1.8vw,1.1rem);color:var(--muted);letter-spacing:.25em;margin-bottom:.6rem;animation:fadeUp .8s .65s both}
+.hero .tagline{font-size:clamp(1.4rem,3.5vw,2.2rem);font-weight:700;color:var(--gold);letter-spacing:.15em;margin-bottom:2rem;animation:fadeUp .8s .8s both}
+.hero .quote{max-width:480px;margin:0 auto 2rem;font-size:.95rem;color:var(--muted);font-style:italic;border-left:2px solid var(--red);padding-left:1rem;text-align:left;animation:fadeUp .8s .95s both}
+.hero .desc{max-width:560px;margin:0 auto 3rem;color:var(--muted-bright);font-size:1.05rem;line-height:1.8;animation:fadeUp .8s 1.1s both}
 .hero .desc strong{color:var(--gold)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes starPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.08);opacity:.85}}
 
 /* INSTALL BOX */
-.install-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.6rem 2rem;text-align:left;max-width:560px;width:100%;margin:0 auto;box-shadow:0 8px 40px rgba(0,0,0,.4)}
+.install-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.6rem 2rem;text-align:left;max-width:560px;width:100%;margin:0 auto;box-shadow:0 8px 40px rgba(0,0,0,.4);animation:fadeUp .8s 1.3s both}
 .install-row{display:flex;align-items:center;justify-content:space-between;gap:.8rem}
 .install-row .label{font-size:.68rem;color:var(--gold-dim);text-transform:uppercase;letter-spacing:.12em;font-weight:700;white-space:nowrap}
 .install-row code{font-size:.8rem;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
