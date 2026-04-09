@@ -3,407 +3,854 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>shijian — 实践方法论工具集</title>
+<title>shijian — AI Agent 方法论工具集</title>
+<meta name="description" content="一套让 AI 先看事实再下判断、先搞清楚再动手、做完之后会复盘的结构化方法论。适配 OpenClaw。">
+<meta property="og:title" content="shijian — 实践 × 时间">
+<meta property="og:description" content="AI Agent 方法论工具集。不是 prompt 工程，不是角色扮演。">
+<meta property="og:url" content="https://mon-ren.github.io/shijian/">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>★</text></svg>">
 <style>
-  :root {
-    --red: #DE2910;
-    --red-dark: #8B0000;
-    --red-deep: #5C0000;
-    --gold: #FFDE00;
-    --gold-dim: #C5A600;
-    --bg: #0D0000;
-    --surface: #1A0505;
-    --surface2: #220808;
-    --border: #3A1010;
-    --border-hi: #6B1A1A;
-    --text: #F0E0E0;
-    --muted: #9A7A7A;
-  }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    line-height: 1.7;
-    -webkit-font-smoothing: antialiased;
-  }
-  a { color: var(--gold); text-decoration: none; }
-  a:hover { color: var(--gold-dim); text-decoration: underline; }
-  code {
-    font-family: "SF Mono", "Fira Code", "JetBrains Mono", "Noto Sans Mono CJK SC", monospace;
-  }
+/* ══════════════════════════════════════════════
+   DESIGN TOKENS
+   ══════════════════════════════════════════════ */
+:root {
+  --red: #DE2910;
+  --red-glow: rgba(222,41,16,0.35);
+  --red-dark: #8B0000;
+  --red-deep: #5C0000;
+  --gold: #FFDE00;
+  --gold-dim: #C5A600;
+  --gold-soft: rgba(255,222,0,0.08);
+  --bg: #080000;
+  --surface: #140404;
+  --surface2: #1C0606;
+  --surface3: #240A0A;
+  --border: #2E0C0C;
+  --border-hi: #5A1616;
+  --text: #F0E0E0;
+  --text-bright: #FFF5F5;
+  --muted: #8A6A6A;
+  --muted-bright: #A08080;
 
-  /* ── Hero ── */
-  .hero {
-    min-height: 90vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 4rem 2rem;
-    background:
-      radial-gradient(ellipse at 50% 30%, rgba(222,41,16,0.15) 0%, transparent 55%),
-      radial-gradient(ellipse at 50% 80%, rgba(139,0,0,0.1) 0%, transparent 50%),
-      var(--bg);
-    border-bottom: 1px solid var(--border);
-  }
-  .hero .star {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-    filter: drop-shadow(0 0 20px rgba(255,222,0,0.3));
-  }
-  .hero h1 {
-    font-size: clamp(3.5rem, 10vw, 7rem);
-    font-weight: 900;
-    letter-spacing: 0.05em;
-    color: var(--red);
-    text-shadow: 0 0 60px rgba(222,41,16,0.3);
-    margin-bottom: 0.3rem;
-  }
-  .hero .pinyin {
-    font-size: clamp(0.9rem, 2vw, 1.2rem);
-    color: var(--muted);
-    letter-spacing: 0.2em;
-    margin-bottom: 0.5rem;
-  }
-  .hero .tagline {
-    font-size: clamp(1.3rem, 3.5vw, 2rem);
-    font-weight: 700;
-    color: var(--gold);
-    margin-bottom: 2rem;
-    letter-spacing: 0.1em;
-  }
-  .hero .quote {
-    max-width: 500px;
-    font-size: 1rem;
-    color: var(--muted);
-    font-style: italic;
-    border-left: 3px solid var(--red);
-    padding-left: 1rem;
-    margin: 0 auto 2.5rem;
-    text-align: left;
-  }
-  .hero .desc {
-    max-width: 560px;
-    color: var(--muted);
-    font-size: 1rem;
-    margin-bottom: 2.5rem;
-  }
+  /* layers */
+  --glass: rgba(20,4,4,0.75);
+  --glass-border: rgba(90,22,22,0.4);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+  background:var(--bg);color:var(--text);line-height:1.7;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--gold);text-decoration:none;transition:color .2s}
+a:hover{color:var(--gold-dim)}
+code{font-family:"SF Mono","Fira Code","JetBrains Mono",monospace}
+::selection{background:var(--red);color:#fff}
 
-  /* Install box */
-  .install-box {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 1.4rem 2rem;
-    text-align: left;
-    min-width: 320px;
-    max-width: 540px;
-  }
-  .install-box .label {
-    font-size: 0.7rem;
-    color: var(--gold-dim);
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    margin-bottom: 0.5rem;
-    font-weight: 600;
-  }
-  .install-box code {
-    font-size: 0.85rem;
-    color: var(--text);
-    word-break: break-all;
-  }
-  .install-box .sep {
-    border: none;
-    border-top: 1px solid var(--border);
-    margin: 0.8rem 0;
-  }
+/* ══════════════════════════════════════════════
+   ANIMATED BACKGROUND CANVAS
+   ══════════════════════════════════════════════ */
+#bg-canvas{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  z-index:0;pointer-events:none;opacity:0.5;
+}
 
-  /* ── Section ── */
-  section {
-    max-width: 960px;
-    margin: 0 auto;
-    padding: 4rem 2rem;
-  }
-  section h2 {
-    font-size: 1.8rem;
-    font-weight: 800;
-    margin-bottom: 0.4rem;
-    color: var(--red);
-    letter-spacing: 0.03em;
-  }
-  section .section-desc {
-    color: var(--muted);
-    margin-bottom: 2rem;
-    font-size: 1rem;
-  }
+/* ══════════════════════════════════════════════
+   NAV
+   ══════════════════════════════════════════════ */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  padding:0 2rem;height:56px;
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--glass);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--glass-border);
+  transform:translateY(-100%);
+  animation:slideDown .6s .3s forwards;
+}
+@keyframes slideDown{to{transform:translateY(0)}}
+.nav-logo{
+  font-weight:900;font-size:1.1rem;color:var(--red);
+  letter-spacing:.08em;display:flex;align-items:center;gap:.5rem;
+}
+.nav-logo .star{color:var(--gold);font-size:1rem}
+.nav-links{display:flex;gap:1.5rem;align-items:center}
+.nav-links a{
+  color:var(--muted-bright);font-size:.82rem;font-weight:500;
+  letter-spacing:.03em;transition:color .2s;
+}
+.nav-links a:hover{color:var(--gold)}
+.nav-gh{
+  display:inline-flex;align-items:center;gap:.4rem;
+  padding:.35rem .8rem;border-radius:6px;
+  border:1px solid var(--border-hi);color:var(--text);
+  font-size:.78rem;transition:all .2s;
+}
+.nav-gh:hover{border-color:var(--red);color:var(--gold);background:rgba(222,41,16,.08)}
 
-  /* ── Problem cards ── */
-  .problems {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 1rem;
-  }
-  .problem-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 1.2rem;
-    transition: border-color 0.2s;
-  }
-  .problem-card:hover { border-color: var(--border-hi); }
-  .problem-card .icon { font-size: 1.3rem; margin-bottom: 0.4rem; }
-  .problem-card h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.3rem; }
-  .problem-card p { font-size: 0.85rem; color: var(--muted); }
+/* ══════════════════════════════════════════════
+   HERO
+   ══════════════════════════════════════════════ */
+.hero{
+  position:relative;z-index:1;
+  min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:6rem 2rem 4rem;
+  overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 60% 40% at 50% 35%, rgba(222,41,16,.18) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 50% at 50% 80%, rgba(139,0,0,.08) 0%, transparent 60%);
+  pointer-events:none;
+}
+.hero-content{position:relative;z-index:2;max-width:720px}
+.hero-star{
+  font-size:3.5rem;margin-bottom:1.5rem;
+  animation:starPulse 3s ease-in-out infinite;
+  filter:drop-shadow(0 0 30px rgba(255,222,0,.4));
+}
+@keyframes starPulse{
+  0%,100%{transform:scale(1);opacity:1}
+  50%{transform:scale(1.08);opacity:.85}
+}
+.hero h1{
+  font-size:clamp(4rem,12vw,8rem);font-weight:900;
+  letter-spacing:.06em;color:var(--red);
+  text-shadow:0 0 80px var(--red-glow),0 2px 40px rgba(222,41,16,.2);
+  line-height:1;margin-bottom:.5rem;
+  opacity:0;animation:fadeUp .8s .5s forwards;
+}
+.hero .pinyin{
+  font-size:clamp(.85rem,1.8vw,1.1rem);color:var(--muted);
+  letter-spacing:.25em;margin-bottom:.6rem;
+  opacity:0;animation:fadeUp .8s .65s forwards;
+}
+.hero .tagline{
+  font-size:clamp(1.4rem,3.5vw,2.2rem);font-weight:700;
+  color:var(--gold);letter-spacing:.15em;margin-bottom:2rem;
+  opacity:0;animation:fadeUp .8s .8s forwards;
+}
+.hero .quote{
+  max-width:480px;margin:0 auto 2rem;
+  font-size:.95rem;color:var(--muted);font-style:italic;
+  border-left:2px solid var(--red);padding-left:1rem;text-align:left;
+  opacity:0;animation:fadeUp .8s .95s forwards;
+}
+.hero .desc{
+  max-width:560px;margin:0 auto 3rem;
+  color:var(--muted-bright);font-size:1.05rem;line-height:1.8;
+  opacity:0;animation:fadeUp .8s 1.1s forwards;
+}
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(24px)}
+  to{opacity:1;transform:translateY(0)}
+}
 
-  /* ── Architecture ── */
-  .arch {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 2rem;
-    font-size: 0.85rem;
-    line-height: 2;
-    color: var(--muted);
-    overflow-x: auto;
-  }
-  .arch .hl  { color: var(--red); font-weight: 700; }
-  .arch .hl2 { color: var(--gold); font-weight: 600; }
-  .arch .hl3 { color: #E8655A; }
-  .arch .hl4 { color: #F59E6C; }
+/* Install box */
+.install-box{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:12px;padding:1.6rem 2rem;text-align:left;
+  max-width:560px;width:100%;margin:0 auto;
+  opacity:0;animation:fadeUp .8s 1.3s forwards;
+  box-shadow:0 8px 40px rgba(0,0,0,.4);
+}
+.install-row{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:.8rem;
+}
+.install-row .label{
+  font-size:.68rem;color:var(--gold-dim);text-transform:uppercase;
+  letter-spacing:.12em;font-weight:700;white-space:nowrap;
+}
+.install-row code{
+  font-size:.8rem;color:var(--text);flex:1;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.copy-btn{
+  flex-shrink:0;background:var(--surface2);border:1px solid var(--border);
+  color:var(--muted);border-radius:6px;padding:.3rem .6rem;
+  cursor:pointer;font-size:.72rem;transition:all .2s;
+  display:flex;align-items:center;gap:.3rem;
+}
+.copy-btn:hover{border-color:var(--red);color:var(--gold)}
+.copy-btn.copied{border-color:var(--gold);color:var(--gold)}
+.install-sep{border:none;border-top:1px solid var(--border);margin:.8rem 0}
 
-  /* ── Skill grid ── */
-  .skill-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1rem;
-  }
-  .skill-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 1.2rem 1.4rem;
-    transition: border-color 0.2s, background 0.2s;
-  }
-  .skill-card:hover { border-color: var(--red); background: var(--surface2); }
-  .skill-card .skill-name {
-    font-size: 0.75rem;
-    color: var(--muted);
-    margin-bottom: 0.3rem;
-  }
-  .skill-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.3rem; }
-  .skill-card p { font-size: 0.85rem; color: var(--muted); }
-  .skill-card .tag {
-    display: inline-block;
-    font-size: 0.68rem;
-    padding: 0.15rem 0.5rem;
-    border-radius: 3px;
-    margin-top: 0.5rem;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-  }
-  .tag-router      { background: rgba(222,41,16,0.2); color: var(--red); }
-  .tag-philosophy  { background: rgba(255,222,0,0.12); color: var(--gold); }
-  .tag-method      { background: rgba(232,101,90,0.15); color: #E8655A; }
-  .tag-strategy    { background: rgba(245,158,108,0.15); color: #F59E6C; }
-  .tag-orchestration { background: rgba(255,222,0,0.08); color: var(--gold-dim); }
+/* Hero scroll indicator */
+.scroll-hint{
+  position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:.4rem;
+  color:var(--muted);font-size:.72rem;letter-spacing:.1em;
+  opacity:0;animation:fadeUp .8s 1.8s forwards;
+}
+.scroll-hint .arrow{
+  width:20px;height:20px;border-right:1.5px solid var(--muted);
+  border-bottom:1.5px solid var(--muted);
+  transform:rotate(45deg);animation:bounce 2s infinite;
+}
+@keyframes bounce{
+  0%,100%{transform:rotate(45deg) translateY(0)}
+  50%{transform:rotate(45deg) translateY(6px)}
+}
 
-  /* ── Footer ── */
-  footer {
-    text-align: center;
-    padding: 3rem 2rem;
-    color: var(--muted);
-    font-size: 0.85rem;
-    border-top: 1px solid var(--border);
-  }
-  footer a { color: var(--muted); }
-  footer a:hover { color: var(--gold); text-decoration: none; }
+/* ══════════════════════════════════════════════
+   SECTIONS — SHARED
+   ══════════════════════════════════════════════ */
+section{position:relative;z-index:1}
+.section-inner{
+  max-width:1040px;margin:0 auto;padding:6rem 2rem;
+}
+.section-label{
+  font-size:.68rem;color:var(--red);text-transform:uppercase;
+  letter-spacing:.2em;font-weight:700;margin-bottom:.6rem;
+}
+.section-title{
+  font-size:clamp(1.6rem,4vw,2.4rem);font-weight:800;
+  color:var(--text-bright);margin-bottom:.5rem;letter-spacing:.02em;
+}
+.section-desc{
+  color:var(--muted);font-size:1rem;margin-bottom:3rem;max-width:600px;
+}
 
-  @media (max-width: 640px) {
-    .install-box { min-width: auto; width: 100%; }
-    .hero { min-height: 70vh; padding: 3rem 1.5rem; }
-    section { padding: 3rem 1.5rem; }
-  }
+/* Reveal animation */
+.reveal{
+  opacity:0;transform:translateY(30px);
+  transition:opacity .7s cubic-bezier(.22,1,.36,1),transform .7s cubic-bezier(.22,1,.36,1);
+}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:.1s}
+.reveal-delay-2{transition-delay:.2s}
+.reveal-delay-3{transition-delay:.3s}
+
+/* ══════════════════════════════════════════════
+   PROBLEM — THE PAIN
+   ══════════════════════════════════════════════ */
+.problems-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;
+}
+.problem-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:12px;padding:1.5rem;
+  transition:all .35s cubic-bezier(.22,1,.36,1);
+  position:relative;overflow:hidden;
+}
+.problem-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--red),transparent);
+  opacity:0;transition:opacity .35s;
+}
+.problem-card:hover{
+  border-color:var(--border-hi);transform:translateY(-4px);
+  box-shadow:0 12px 40px rgba(0,0,0,.3);
+}
+.problem-card:hover::before{opacity:1}
+.problem-icon{font-size:1.6rem;margin-bottom:.8rem}
+.problem-card h3{font-size:.95rem;font-weight:700;margin-bottom:.4rem;color:var(--text-bright)}
+.problem-card p{font-size:.82rem;color:var(--muted);line-height:1.6}
+
+/* ══════════════════════════════════════════════
+   ARCHITECTURE — INTERACTIVE LAYERS
+   ══════════════════════════════════════════════ */
+.arch-layers{display:flex;flex-direction:column;gap:.6rem}
+.arch-layer{
+  display:flex;align-items:stretch;gap:1rem;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:12px;padding:1.2rem 1.5rem;
+  cursor:pointer;transition:all .35s;
+  position:relative;overflow:hidden;
+}
+.arch-layer::after{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
+  border-radius:3px 0 0 3px;
+}
+.arch-layer:hover{border-color:var(--border-hi);transform:translateX(4px)}
+.arch-layer.active{border-color:var(--red);background:var(--surface2)}
+
+.arch-layer[data-layer="root"]::after{background:var(--red)}
+.arch-layer[data-layer="philosophy"]::after{background:var(--gold)}
+.arch-layer[data-layer="method"]::after{background:#E8655A}
+.arch-layer[data-layer="strategy"]::after{background:#F59E6C}
+.arch-layer[data-layer="orchestration"]::after{background:var(--gold-dim)}
+
+.arch-label{
+  min-width:100px;font-size:.68rem;text-transform:uppercase;
+  letter-spacing:.12em;font-weight:700;
+  display:flex;align-items:center;
+}
+.arch-layer[data-layer="root"] .arch-label{color:var(--red)}
+.arch-layer[data-layer="philosophy"] .arch-label{color:var(--gold)}
+.arch-layer[data-layer="method"] .arch-label{color:#E8655A}
+.arch-layer[data-layer="strategy"] .arch-label{color:#F59E6C}
+.arch-layer[data-layer="orchestration"] .arch-label{color:var(--gold-dim)}
+
+.arch-skills{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+.arch-skill-tag{
+  font-size:.75rem;padding:.25rem .65rem;border-radius:6px;
+  background:var(--surface3);color:var(--muted-bright);
+  border:1px solid var(--border);transition:all .25s;
+  white-space:nowrap;
+}
+.arch-layer:hover .arch-skill-tag{border-color:var(--border-hi)}
+
+.arch-detail{
+  max-height:0;overflow:hidden;transition:max-height .4s cubic-bezier(.22,1,.36,1);
+  background:var(--surface2);border-radius:0 0 12px 12px;
+  margin:-.3rem 0 0;padding:0 1.5rem;
+}
+.arch-detail.open{max-height:300px;padding:1.2rem 1.5rem}
+.arch-detail p{font-size:.85rem;color:var(--muted);line-height:1.7}
+
+/* ══════════════════════════════════════════════
+   SKILLS — TAB GRID
+   ══════════════════════════════════════════════ */
+.skill-tabs{
+  display:flex;gap:.5rem;margin-bottom:2rem;flex-wrap:wrap;
+}
+.skill-tab{
+  padding:.45rem 1rem;border-radius:8px;
+  border:1px solid var(--border);background:transparent;
+  color:var(--muted);font-size:.78rem;font-weight:600;
+  cursor:pointer;transition:all .25s;letter-spacing:.03em;
+  font-family:inherit;
+}
+.skill-tab:hover{border-color:var(--border-hi);color:var(--text)}
+.skill-tab.active{border-color:var(--red);color:var(--gold);background:rgba(222,41,16,.08)}
+
+.skill-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem;
+}
+.skill-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:12px;padding:1.5rem;
+  transition:all .35s cubic-bezier(.22,1,.36,1);
+  position:relative;overflow:hidden;
+  display:flex;flex-direction:column;
+}
+.skill-card::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 80% 20%,rgba(222,41,16,.06),transparent 60%);
+  opacity:0;transition:opacity .35s;
+}
+.skill-card:hover{
+  border-color:var(--red);transform:translateY(-3px);
+  box-shadow:0 8px 30px rgba(0,0,0,.3);
+}
+.skill-card:hover::before{opacity:1}
+.skill-card[hidden]{display:none}
+
+.skill-card .s-name{
+  font-size:.68rem;color:var(--muted);font-family:monospace;
+  margin-bottom:.4rem;
+}
+.skill-card .s-title{
+  font-size:1.05rem;font-weight:700;color:var(--text-bright);
+  margin-bottom:.5rem;display:flex;align-items:center;gap:.5rem;
+}
+.skill-card .s-desc{
+  font-size:.82rem;color:var(--muted);line-height:1.6;flex:1;
+}
+.skill-card .s-trigger{
+  margin-top:.8rem;font-size:.72rem;color:var(--muted-bright);
+  padding-top:.6rem;border-top:1px solid var(--border);
+}
+.skill-card .s-trigger strong{color:var(--gold-dim);font-weight:600}
+.skill-tag{
+  display:inline-block;font-size:.62rem;padding:.15rem .5rem;
+  border-radius:4px;font-weight:700;letter-spacing:.06em;
+}
+.tag-router{background:rgba(222,41,16,.18);color:var(--red)}
+.tag-philosophy{background:rgba(255,222,0,.1);color:var(--gold)}
+.tag-method{background:rgba(232,101,90,.12);color:#E8655A}
+.tag-strategy{background:rgba(245,158,108,.12);color:#F59E6C}
+.tag-orchestration{background:rgba(255,222,0,.06);color:var(--gold-dim)}
+
+/* ══════════════════════════════════════════════
+   DEMO / QUICK START
+   ══════════════════════════════════════════════ */
+.demo-terminal{
+  background:#0C0202;border:1px solid var(--border);
+  border-radius:12px;overflow:hidden;
+  box-shadow:0 12px 50px rgba(0,0,0,.5);
+}
+.demo-bar{
+  display:flex;align-items:center;gap:.5rem;
+  padding:.7rem 1rem;background:var(--surface);
+  border-bottom:1px solid var(--border);
+}
+.demo-dot{width:10px;height:10px;border-radius:50%}
+.demo-dot.r{background:#FF5F57}
+.demo-dot.y{background:#FEBC2E}
+.demo-dot.g{background:#28C840}
+.demo-bar span{
+  font-size:.72rem;color:var(--muted);margin-left:.5rem;font-family:monospace;
+}
+.demo-body{
+  padding:1.5rem;font-size:.82rem;line-height:1.9;
+  font-family:"SF Mono","Fira Code",monospace;
+  min-height:200px;
+}
+.demo-line{opacity:0;animation:typeIn .3s forwards}
+.demo-prompt{color:var(--gold)}
+.demo-cmd{color:var(--text)}
+.demo-out{color:var(--muted)}
+.demo-highlight{color:var(--red);font-weight:600}
+.demo-success{color:#28C840}
+@keyframes typeIn{from{opacity:0;transform:translateX(-4px)}to{opacity:1;transform:translateX(0)}}
+
+/* ══════════════════════════════════════════════
+   COMPATIBILITY STRIP
+   ══════════════════════════════════════════════ */
+.compat-strip{
+  display:flex;justify-content:center;gap:2rem;flex-wrap:wrap;
+}
+.compat-item{
+  display:flex;align-items:center;gap:.5rem;
+  font-size:.85rem;color:var(--muted-bright);
+}
+.compat-icon{font-size:1.2rem}
+
+/* ══════════════════════════════════════════════
+   FOOTER
+   ══════════════════════════════════════════════ */
+footer{
+  position:relative;z-index:1;text-align:center;
+  padding:4rem 2rem;color:var(--muted);font-size:.82rem;
+  border-top:1px solid var(--border);
+}
+footer a{color:var(--muted);transition:color .2s}
+footer a:hover{color:var(--gold);text-decoration:none}
+.footer-star{
+  font-size:1.2rem;margin-bottom:.8rem;
+  color:var(--gold);filter:drop-shadow(0 0 10px rgba(255,222,0,.3));
+}
+
+/* ══════════════════════════════════════════════
+   RESPONSIVE
+   ══════════════════════════════════════════════ */
+@media(max-width:840px){
+  .problems-grid{grid-template-columns:repeat(2,1fr)}
+  .skill-grid{grid-template-columns:1fr}
+}
+@media(max-width:640px){
+  .problems-grid{grid-template-columns:1fr}
+  .nav-links{display:none}
+  .hero{padding:5rem 1.5rem 3rem}
+  .section-inner{padding:4rem 1.5rem}
+  .install-row code{font-size:.7rem}
+  .arch-label{min-width:60px;font-size:.6rem}
+  .arch-skill-tag{font-size:.68rem}
+  .compat-strip{gap:1rem}
+}
 </style>
 </head>
 <body>
 
-<div class="hero">
-  <div class="star">★</div>
-  <h1>shijian</h1>
-  <div class="pinyin">/ ʂɨ̌tɕiɛ̂n /</div>
-  <div class="tagline">实 践 × 时 间</div>
-  <div class="quote">
-    "实践、认识、再实践、再认识，这种形式，循环往复以至无穷。"<br>
-    —— 毛泽东《实践论》
-  </div>
-  <div class="desc">
-    AI Agent 方法论工具集。不是 prompt 工程，不是角色扮演。<br>
-    是一套让 AI 先看事实再下判断、先搞清楚再动手、做完之后会复盘的结构化方法论。
-  </div>
-  <div class="install-box">
-    <div class="label">macOS / Linux</div>
-    <code>curl -fsSL https://raw.githubusercontent.com/Mon-Ren/shijian/main/install.sh | sh</code>
-    <hr class="sep">
-    <div class="label">Windows</div>
-    <code>iex (iwr -useb https://raw.githubusercontent.com/Mon-Ren/shijian/main/install.ps1).Content</code>
-    <hr class="sep">
-    <div class="label">仓库</div>
-    <code><a href="https://github.com/Mon-Ren/shijian">github.com/Mon-Ren/shijian</a></code>
-  </div>
-</div>
+<!-- ── Animated BG ── -->
+<canvas id="bg-canvas"></canvas>
 
-<section>
-  <h2>🩺 AI 的通病</h2>
-  <div class="section-desc">当前的 AI Agent 会思考，但不会"想问题"。</div>
-  <div class="problems">
-    <div class="problem-card">
-      <div class="icon">🌀</div>
-      <h3>抓不住重点</h3>
-      <p>面对复杂问题，胡子眉毛一把抓，分不清主次。</p>
+<!-- ── Nav ── -->
+<nav class="nav">
+  <div class="nav-logo"><span class="star">★</span> shijian</div>
+  <div class="nav-links">
+    <a href="#problems">问题</a>
+    <a href="#architecture">架构</a>
+    <a href="#skills">Skills</a>
+    <a href="#demo">示例</a>
+    <a class="nav-gh" href="https://github.com/Mon-Ren/shijian">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+      GitHub
+    </a>
+  </div>
+</nav>
+
+<!-- ═══════════════════════ HERO ═══════════════════════ -->
+<section class="hero" id="top">
+  <div class="hero-content">
+    <div class="hero-star">★</div>
+    <h1>shijian</h1>
+    <div class="pinyin">/ ʂɨ̌tɕiɛ̂n /</div>
+    <div class="tagline">实 践 × 时 间</div>
+    <div class="quote">
+      "实践、认识、再实践、再认识，这种形式，循环往复以至无穷。"<br>
+      —— 毛泽东《实践论》
     </div>
-    <div class="problem-card">
-      <div class="icon">🗣️</div>
-      <h3>不调查就下结论</h3>
-      <p>信息不充分就急着给答案，犯教条主义错误。</p>
+    <div class="desc">
+      AI Agent 方法论工具集。<br>
+      不是 prompt 工程，不是角色扮演。<br>
+      是一套让 AI <strong style="color:var(--gold)">先看事实再下判断</strong>、<strong style="color:var(--gold)">先搞清楚再动手</strong>、<strong style="color:var(--gold)">做完之后会复盘</strong>的结构化方法论。
     </div>
-    <div class="problem-card">
-      <div class="icon">😴</div>
-      <h3>做完不自查</h3>
-      <p>"差不多就行了"，缺乏验证和复盘的习惯。</p>
+    <div class="install-box">
+      <div class="install-row">
+        <span class="label">macOS / Linux</span>
+        <code>curl -fsSL .../install.sh | sh</code>
+        <button class="copy-btn" onclick="copyCmd(this,'curl -fsSL https://raw.githubusercontent.com/Mon-Ren/shijian/main/install.sh | sh')">📋 复制</button>
+      </div>
+      <hr class="install-sep">
+      <div class="install-row">
+        <span class="label">Windows</span>
+        <code>iex (iwr -useb ...install.ps1).Content</code>
+        <button class="copy-btn" onclick="copyCmd(this,'iex (iwr -useb https://raw.githubusercontent.com/Mon-Ren/shijian/main/install.ps1).Content')">📋 复制</button>
+      </div>
     </div>
-    <div class="problem-card">
-      <div class="icon">🏳️</div>
-      <h3>遇难即退</h3>
-      <p>第一次碰壁就说"超出能力范围"，缺乏持续推进力。</p>
+  </div>
+  <div class="scroll-hint">
+    <span>SCROLL</span>
+    <div class="arrow"></div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ PROBLEMS ═══════════════════════ -->
+<section id="problems">
+  <div class="section-inner">
+    <div class="reveal">
+      <div class="section-label">THE PAIN</div>
+      <div class="section-title">AI 的通病</div>
+      <div class="section-desc">AI 会思考，但不会"想问题"。六种典型病症，shijian 逐个击破。</div>
     </div>
-    <div class="problem-card">
-      <div class="icon">🎯</div>
-      <h3>同时做十件事</h3>
-      <p>什么都想做，件件做不好，不懂集中兵力。</p>
-    </div>
-    <div class="problem-card">
-      <div class="icon">📋</div>
-      <h3>只会执行不会想</h3>
-      <p>用户说什么就做什么，没有自己的分析和判断。</p>
+    <div class="problems-grid">
+      <div class="problem-card reveal reveal-delay-1">
+        <div class="problem-icon">🌀</div>
+        <h3>抓不住重点</h3>
+        <p>面对复杂问题，胡子眉毛一把抓，分不清主次矛盾。</p>
+      </div>
+      <div class="problem-card reveal reveal-delay-1">
+        <div class="problem-icon">🗣️</div>
+        <h3>不调查就下结论</h3>
+        <p>信息不充分就急着给答案，犯教条主义错误。</p>
+      </div>
+      <div class="problem-card reveal reveal-delay-2">
+        <div class="problem-icon">😴</div>
+        <h3>做完不自查</h3>
+        <p>"差不多就行了"，缺乏验证和复盘的习惯。</p>
+      </div>
+      <div class="problem-card reveal reveal-delay-2">
+        <div class="problem-icon">🏳️</div>
+        <h3>遇难即退</h3>
+        <p>第一次碰壁就说"超出能力范围"，缺乏持续推进力。</p>
+      </div>
+      <div class="problem-card reveal reveal-delay-3">
+        <div class="problem-icon">🎯</div>
+        <h3>同时做十件事</h3>
+        <p>什么都想做，件件做不好，不懂集中兵力。</p>
+      </div>
+      <div class="problem-card reveal reveal-delay-3">
+        <div class="problem-icon">📋</div>
+        <h3>只会执行不会想</h3>
+        <p>用户说什么就做什么，没有自己的分析和判断。</p>
+      </div>
     </div>
   </div>
 </section>
 
-<section>
-  <h2>🏗️ 架构</h2>
-  <div class="section-desc">不是一堆零散的 skill 拼凑，而是一座有层次的方法论体系。</div>
-  <div class="arch">
-<span class="hl">总原则：实事求是</span> ← SOUL.md 常驻，每次对话自动生效
-    │
-    ▼
-<span class="hl2">第一层 · 哲学基座</span> ── 分析问题的底层框架
-  ├── 矛盾分析法 — 找主要矛盾
-  └── 实践认识论 — 迭代验证
-    │
-    ▼
-<span class="hl3">第二层 · 工作方法</span> ── 日常工作的基本方法
-  ├── 调查研究 — 先搞清楚再说
-  ├── 多源汇聚 — 交叉验证
-  └── 质量审查 — 做完会复盘
-    │
-    ▼
-<span class="hl4">第三层 · 战略战术</span> ── 具体任务的行动指导
-  ├── 持久战略 — 长跑不急
-  ├── 集中兵力 — 聚焦不散
-  ├── 星火燎原 — 从小做起
-  └── 统筹兼顾 — 多目标平衡
-    │
-    ▼
-编排层：工作流组合 ── 多个 skill 的标准串联
-  </div>
-</section>
-
-<section>
-  <h2>🧰 11 个 Skill</h2>
-  <div class="section-desc">每个 skill 都有明确的触发条件、操作流程和输出格式。不是每个问题都要全部加载。</div>
-  <div class="skill-grid">
-    <div class="skill-card">
-      <div class="skill-name">shijian-arming-thought</div>
-      <h3>🧭 总路由器</h3>
-      <p>建立"实事求是"总原则，按需调度下游 skill。</p>
-      <span class="tag tag-router">入口</span>
+<!-- ═══════════════════════ ARCHITECTURE ═══════════════════════ -->
+<section id="architecture" style="background:var(--surface)">
+  <div class="section-inner">
+    <div class="reveal">
+      <div class="section-label">ARCHITECTURE</div>
+      <div class="section-title">四层方法论体系</div>
+      <div class="section-desc">不是零散 skill 拼凑，而是一座有层次、可编排的方法论架构。点击每层查看详情。</div>
     </div>
-    <div class="skill-card">
-      <div class="skill-name">shijian-contradiction-analysis</div>
-      <h3>⚔️ 矛盾分析法</h3>
-      <p>识别矛盾、找主要矛盾、区分性质、选择方法。输出结构化分析表。</p>
-      <span class="tag tag-philosophy">哲学基座</span>
-    </div>
-    <div class="skill-card">
-      <div class="skill-name">shijian-practice-cognition</div>
-      <h3>🔄 实践认识论</h3>
-      <p>实践→认识→再实践的螺旋上升。方案验证与迭代改进。</p>
-      <span class="tag tag-philosophy">哲学基座</span>
-    </div>
-    <div class="skill-card">
-      <div class="skill-name">shijian-investigation-first</div>
-      <h3>🔎 调查研究</h3>
-      <p>先调查后发言。深入一线获取第一手资料，让事实规定判断。</p>
-      <span class="tag tag-method">工作方法</span>
-    </div>
-    <div class="skill-card">
-      <div class="skill-name">shijian-mass-line</div>
-      <h3>👥 多源汇聚</h3>
-      <p>从代码、日志、文档、测试等多源收集信息，交叉验证后形成判断。</p>
-      <span class="tag tag-method">工作方法</span>
-    </div>
-    <div class="skill-card">
-      <div class="skill-name">shijian-criticism-self-criticism</div>
-      <h3>🪞 质量审查</h3>
-      <p>工作审视报告：目标完成情况、问题表、根因分析、改进建议。</p>
-      <span class="tag tag-method">工作方法</span>
-    </div>
-    <div class="skill-card">
-      <div class="skill-name">shijian-protracted-strategy</div>
-      <h3>⏳ 持久战略</h3>
-      <p>防御→相持→反攻三阶段。既不急于求成，也不畏难放弃。</p>
-      <span class="tag tag-strategy">战略战术</span>
-    </div>
-    <div class="skill-card">
-      <div class="skill-name">shijian-concentrate-forces</div>
-      <h3>🎯 集中兵力</h3>
-      <p>"伤其十指不如断其一指"。一次聚焦一个目标，彻底解决再转向。</p>
-      <span class="tag tag-strategy">战略战术</span>
-    </div>
-    <div class="skill-card">
-      <div class="skill-name">shijian-spark-prairie-fire</div>
-      <h3>🔥 星火燎原</h3>
-      <p>建立根据地，不做流寇。从最小可行切入点开始，积小胜为大胜。</p>
-      <span class="tag tag-strategy">战略战术</span>
-    </div>
-    <div class="skill-card">
-      <div class="skill-name">shijian-overall-planning</div>
-      <h3>⚖️ 统筹兼顾</h3>
-      <p>识别辩证关系对，在多目标之间找动态平衡，拒绝片面性。</p>
-      <span class="tag tag-strategy">战略战术</span>
-    </div>
-    <div class="skill-card">
-      <div class="skill-name">shijian-workflows</div>
-      <h3>🔗 工作流组合</h3>
-      <p>新项目启动、复杂问题攻坚、方案迭代优化——三条标准化串联流程。</p>
-      <span class="tag tag-orchestration">编排层</span>
+    <div class="arch-layers reveal">
+      <div class="arch-layer" data-layer="root" onclick="toggleArch(this)">
+        <div class="arch-label">精神底色</div>
+        <div class="arch-skills">
+          <span class="arch-skill-tag">精益求精</span>
+          <span class="arch-skill-tag">坚持到底</span>
+          <span class="arch-skill-tag">→ 实事求是</span>
+        </div>
+      </div>
+      <div class="arch-layer" data-layer="philosophy" onclick="toggleArch(this)">
+        <div class="arch-label">哲学基座</div>
+        <div class="arch-skills">
+          <span class="arch-skill-tag">⚔️ 矛盾分析法</span>
+          <span class="arch-skill-tag">🔄 实践认识论</span>
+        </div>
+      </div>
+      <div class="arch-layer" data-layer="method" onclick="toggleArch(this)">
+        <div class="arch-label">工作方法</div>
+        <div class="arch-skills">
+          <span class="arch-skill-tag">🔎 调查研究</span>
+          <span class="arch-skill-tag">👥 多源汇聚</span>
+          <span class="arch-skill-tag">🪞 质量审查</span>
+        </div>
+      </div>
+      <div class="arch-layer" data-layer="strategy" onclick="toggleArch(this)">
+        <div class="arch-label">战略战术</div>
+        <div class="arch-skills">
+          <span class="arch-skill-tag">⏳ 持久战略</span>
+          <span class="arch-skill-tag">🎯 集中兵力</span>
+          <span class="arch-skill-tag">🔥 星火燎原</span>
+          <span class="arch-skill-tag">⚖️ 统筹兼顾</span>
+        </div>
+      </div>
+      <div class="arch-layer" data-layer="orchestration" onclick="toggleArch(this)">
+        <div class="arch-label">编排层</div>
+        <div class="arch-skills">
+          <span class="arch-skill-tag">🔗 工作流组合</span>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
-<section>
-  <h2>⚡ 兼容性</h2>
-  <div class="section-desc">
-    纯 Markdown，零依赖，全平台兼容。<br>
-    sub-agent prompt 兼容 OpenClaw <code>sessions_spawn</code>，可按需派遣执行专项分析。
+<!-- ═══════════════════════ SKILLS ═══════════════════════ -->
+<section id="skills">
+  <div class="section-inner">
+    <div class="reveal">
+      <div class="section-label">SKILL PACK</div>
+      <div class="section-title">11 个 Skill</div>
+      <div class="section-desc">每个都有明确的触发条件、操作流程和输出格式。简单任务不用加载任何 skill。</div>
+    </div>
+    <div class="skill-tabs reveal">
+      <button class="skill-tab active" onclick="filterSkills('all',this)">全部</button>
+      <button class="skill-tab" onclick="filterSkills('router',this)">入口</button>
+      <button class="skill-tab" onclick="filterSkills('philosophy',this)">哲学基座</button>
+      <button class="skill-tab" onclick="filterSkills('method',this)">工作方法</button>
+      <button class="skill-tab" onclick="filterSkills('strategy',this)">战略战术</button>
+      <button class="skill-tab" onclick="filterSkills('orchestration',this)">编排层</button>
+    </div>
+    <div class="skill-grid">
+      <div class="skill-card reveal" data-cat="router">
+        <div class="s-name">shijian-arming-thought</div>
+        <div class="s-title">🧭 总路由器 <span class="skill-tag tag-router">入口</span></div>
+        <div class="s-desc">建立"实事求是"总原则，按需调度下游 skill。简单任务直接干，复杂任务才加载方法论。</div>
+        <div class="s-trigger"><strong>触发：</strong>复杂任务、需要决策、需要结构化分析</div>
+      </div>
+      <div class="skill-card reveal" data-cat="philosophy">
+        <div class="s-name">shijian-contradiction-analysis</div>
+        <div class="s-title">⚔️ 矛盾分析法 <span class="skill-tag tag-philosophy">哲学</span></div>
+        <div class="s-desc">识别矛盾集合、找主要矛盾、区分对抗性/非对抗性、选择解决方法。输出结构化分析表。</div>
+        <div class="s-trigger"><strong>触发：</strong>问题复杂、优先级不清、多因素互相牵制</div>
+      </div>
+      <div class="skill-card reveal" data-cat="philosophy">
+        <div class="s-name">shijian-practice-cognition</div>
+        <div class="s-title">🔄 实践认识论 <span class="skill-tag tag-philosophy">哲学</span></div>
+        <div class="s-desc">实践→认识→再实践的螺旋上升。每次迭代都让方案更接近真实。</div>
+        <div class="s-trigger"><strong>触发：</strong>需要验证方案、试错迭代、复盘升级</div>
+      </div>
+      <div class="skill-card reveal" data-cat="method">
+        <div class="s-name">shijian-investigation-first</div>
+        <div class="s-title">🔎 调查研究 <span class="skill-tag tag-method">方法</span></div>
+        <div class="s-desc">"没有调查就没有发言权"。深入一线获取第一手资料，让事实规定判断，不是让经验代替调查。</div>
+        <div class="s-trigger"><strong>触发：</strong>信息不足、领域陌生、需要摸清现状</div>
+      </div>
+      <div class="skill-card reveal" data-cat="method">
+        <div class="s-name">shijian-mass-line</div>
+        <div class="s-title">👥 多源汇聚 <span class="skill-tag tag-method">方法</span></div>
+        <div class="s-desc">从代码、日志、文档、测试等多源收集信息，交叉验证后形成判断。拒绝单一信息源。</div>
+        <div class="s-trigger"><strong>触发：</strong>需要交叉验证、整合多方反馈</div>
+      </div>
+      <div class="skill-card reveal" data-cat="method">
+        <div class="s-name">shijian-criticism-self-criticism</div>
+        <div class="s-title">🪞 质量审查 <span class="skill-tag tag-method">方法</span></div>
+        <div class="s-desc">输出工作审视报告：目标完成情况、问题表、根因分析、改进建议。不护短、不自欺。</div>
+        <div class="s-trigger"><strong>触发：</strong>工作完成后的审视、复盘、纠偏</div>
+      </div>
+      <div class="skill-card reveal" data-cat="strategy">
+        <div class="s-name">shijian-protracted-strategy</div>
+        <div class="s-title">⏳ 持久战略 <span class="skill-tag tag-strategy">战术</span></div>
+        <div class="s-desc">防御→相持→反攻三阶段。既不急于求成犯冒进错误，也不畏难放弃犯逃跑主义。</div>
+        <div class="s-trigger"><strong>触发：</strong>长期任务、需要分阶段推进</div>
+      </div>
+      <div class="skill-card reveal" data-cat="strategy">
+        <div class="s-name">shijian-concentrate-forces</div>
+        <div class="s-title">🎯 集中兵力 <span class="skill-tag tag-strategy">战术</span></div>
+        <div class="s-desc">"伤其十指不如断其一指"。一次聚焦一个目标，彻底解决再转向。拒绝分散。</div>
+        <div class="s-trigger"><strong>触发：</strong>多个任务争资源、需要确定主攻方向</div>
+      </div>
+      <div class="skill-card reveal" data-cat="strategy">
+        <div class="s-name">shijian-spark-prairie-fire</div>
+        <div class="s-title">🔥 星火燎原 <span class="skill-tag tag-strategy">战术</span></div>
+        <div class="s-desc">建立根据地，不做流寇。从最小可行切入点开始，积小胜为大胜。</div>
+        <div class="s-trigger"><strong>触发：</strong>资源极少、需要找最小可行切入点</div>
+      </div>
+      <div class="skill-card reveal" data-cat="strategy">
+        <div class="s-name">shijian-overall-planning</div>
+        <div class="s-title">⚖️ 统筹兼顾 <span class="skill-tag tag-strategy">战术</span></div>
+        <div class="s-desc">识别辩证关系对，在多目标之间找动态平衡。拒绝片面性和绝对化。</div>
+        <div class="s-trigger"><strong>触发：</strong>多个目标相互制约、需要权衡取舍</div>
+      </div>
+      <div class="skill-card reveal" data-cat="orchestration">
+        <div class="s-name">shijian-workflows</div>
+        <div class="s-title">🔗 工作流组合 <span class="skill-tag tag-orchestration">编排</span></div>
+        <div class="s-desc">新项目启动、复杂问题攻坚、方案迭代优化——三条标准化串联流程，开箱即用。</div>
+        <div class="s-trigger"><strong>触发：</strong>需要多个 skill 协作的标准流程</div>
+      </div>
+    </div>
   </div>
 </section>
 
+<!-- ═══════════════════════ DEMO ═══════════════════════ -->
+<section id="demo" style="background:var(--surface)">
+  <div class="section-inner">
+    <div class="reveal">
+      <div class="section-label">QUICK START</div>
+      <div class="section-title">安装即生效</div>
+      <div class="section-desc">装完重启 OpenClaw，AI 自动学会"实事求是"。</div>
+    </div>
+    <div class="demo-terminal reveal">
+      <div class="demo-bar">
+        <span class="demo-dot r"></span>
+        <span class="demo-dot y"></span>
+        <span class="demo-dot g"></span>
+        <span>terminal</span>
+      </div>
+      <div class="demo-body" id="demo-body">
+        <!-- filled by JS -->
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ COMPAT ═══════════════════════ -->
+<section id="compat">
+  <div class="section-inner" style="text-align:center">
+    <div class="reveal">
+      <div class="section-label">COMPATIBILITY</div>
+      <div class="section-title">全平台，零依赖</div>
+    </div>
+    <div class="compat-strip reveal reveal-delay-1">
+      <div class="compat-item"><span class="compat-icon">🍎</span> macOS</div>
+      <div class="compat-item"><span class="compat-icon">🐧</span> Linux</div>
+      <div class="compat-item"><span class="compat-icon">🪟</span> Windows</div>
+      <div class="compat-item"><span class="compat-icon">📝</span> 纯 Markdown</div>
+      <div class="compat-item"><span class="compat-icon">🤖</span> OpenClaw</div>
+      <div class="compat-item"><span class="compat-icon">🔀</span> sub-agent</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════ FOOTER ═══════════════════════ -->
 <footer>
-  <p>★ shijian — 实践 × 时间 &nbsp;·&nbsp; <a href="https://github.com/Mon-Ren/shijian">GitHub</a> &nbsp;·&nbsp; MIT License ★</p>
+  <div class="footer-star">★</div>
+  <p>shijian — 实践 × 时间 &nbsp;·&nbsp; <a href="https://github.com/Mon-Ren/shijian">GitHub</a> &nbsp;·&nbsp; MIT License</p>
+  <p style="margin-top:.5rem;font-size:.72rem;color:var(--muted)">从实践中来，到实践中去。</p>
 </footer>
 
+<!-- ═══════════════════════ SCRIPTS ═══════════════════════ -->
+<script>
+/* ── Particle background ── */
+(function(){
+  const c=document.getElementById('bg-canvas'),ctx=c.getContext('2d');
+  let w,h,particles=[];
+  function resize(){w=c.width=innerWidth;h=c.height=innerHeight}
+  resize();addEventListener('resize',resize);
+  class P{
+    constructor(){this.reset()}
+    reset(){
+      this.x=Math.random()*w;this.y=Math.random()*h;
+      this.vx=(Math.random()-.5)*.15;this.vy=(Math.random()-.5)*.15;
+      this.r=Math.random()*1.5+.3;
+      this.a=Math.random()*.3+.05;
+      this.color=Math.random()>.7?'255,222,0':'222,41,16';
+    }
+    update(){
+      this.x+=this.vx;this.y+=this.vy;
+      if(this.x<0||this.x>w||this.y<0||this.y=h)this.reset();
+    }
+    draw(){
+      ctx.beginPath();ctx.arc(this.x,this.y,this.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(${this.color},${this.a})`;ctx.fill();
+    }
+  }
+  for(let i=0;i<60;i++)particles.push(new P);
+  function loop(){
+    ctx.clearRect(0,0,w,h);
+    particles.forEach(p=>{p.update();p.draw()});
+    requestAnimationFrame(loop);
+  }
+  loop();
+})();
+
+/* ── Scroll reveal ── */
+const obs=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)}});
+},{threshold:.15});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+/* ── Copy command ── */
+function copyCmd(btn,text){
+  navigator.clipboard.writeText(text).then(()=>{
+    btn.classList.add('copied');
+    btn.innerHTML='✅ 已复制';
+    setTimeout(()=>{btn.classList.remove('copied');btn.innerHTML='📋 复制'},1500);
+  });
+}
+
+/* ── Architecture toggle ── */
+function toggleArch(el){
+  const wasActive=el.classList.contains('active');
+  document.querySelectorAll('.arch-layer').forEach(l=>l.classList.remove('active'));
+  if(!wasActive)el.classList.add('active');
+}
+
+/* ── Skill filter ── */
+function filterSkills(cat,btn){
+  document.querySelectorAll('.skill-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.skill-card').forEach(c=>{
+    if(cat==='all'||c.dataset.cat===cat){c.hidden=false;c.style.animation='fadeUp .4s forwards'}
+    else{c.hidden=true}
+  });
+}
+
+/* ── Demo terminal animation ── */
+(function(){
+  const lines=[
+    {t:'prompt',v:'$ curl -fsSL https://raw.githubusercontent.com/Mon-Ren/shijian/main/install.sh | sh'},
+    {t:'out',v:'📦 安装 shijian skills 到 ~/.openclaw/skills/ ...'},
+    {t:'out',v:'  ✓ shijian-arming-thought'},
+    {t:'out',v:'  ✓ shijian-contradiction-analysis'},
+    {t:'out',v:'  ✓ shijian-practice-cognition'},
+    {t:'out',v:'  ✓ shijian-investigation-first'},
+    {t:'out',v:'  ✓ shijian-mass-line'},
+    {t:'out',v:'  ✓ shijian-criticism-self-criticism'},
+    {t:'out',v:'  ✓ shijian-protracted-strategy'},
+    {t:'out',v:'  ✓ shijian-concentrate-forces'},
+    {t:'out',v:'  ✓ shijian-spark-prairie-fire'},
+    {t:'out',v:'  ✓ shijian-overall-planning'},
+    {t:'out',v:'  ✓ shijian-workflows'},
+    {t:'out',v:''},
+    {t:'success',v:'✅ 完成！重启 OpenClaw 后生效。'},
+    {t:'out',v:''},
+    {t:'prompt',v:'$ # 现在让 AI 做一个复杂任务试试...'},
+    {t:'highlight',v:'🧭 [arming-thought] 检测到复杂任务，加载方法论...'},
+    {t:'highlight',v:'🔎 [investigation-first] 先调查，获取项目现状...'},
+    {t:'highlight',v:'⚔️ [contradiction-analysis] 分析主要矛盾...'},
+    {t:'success',v:'→ AI 不再蛮干，而是有章法地推进。这就是 shijian。'},
+  ];
+  const body=document.getElementById('demo-body');
+  let i=0;
+  const demoObs=new IntersectionObserver((entries)=>{
+    if(entries[0].isIntersecting){
+      demoObs.unobserve(body);
+      const iv=setInterval(()=>{
+        if(i>=lines.length){clearInterval(iv);return}
+        const l=lines[i],div=document.createElement('div');
+        div.className='demo-line';
+        div.style.animationDelay=(i*80)+'ms';
+        if(l.t==='prompt')div.innerHTML=`<span class="demo-prompt">${l.v.split('$ ')[0]}$ </span><span class="demo-cmd">${l.v.split('$ ').slice(1).join('$ ')}</span>`;
+        else if(l.t==='success')div.innerHTML=`<span class="demo-success">${l.v}</span>`;
+        else if(l.t==='highlight')div.innerHTML=`<span class="demo-highlight">${l.v}</span>`;
+        else div.innerHTML=`<span class="demo-out">${l.v}</span>`;
+        body.appendChild(div);
+        i++;
+      },180);
+    }
+  },{threshold:.3});
+  demoObs.observe(body);
+})();
+
+/* ── Nav show on scroll past hero ── */
+const nav=document.querySelector('.nav');
+let navShown=false;
+addEventListener('scroll',()=>{
+  if(scrollY>innerHeight*.5&&!navShown){nav.style.transform='translateY(0)';navShown=true}
+  else if(scrollY<innerHeight*.3&&navShown){nav.style.transform='translateY(-100%)';navShown=false}
+});
+</script>
 </body>
 </html>
