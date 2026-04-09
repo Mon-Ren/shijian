@@ -4,6 +4,21 @@ description: |
   触发：当多个任务同时争夺时间、注意力、算力或预算，必须确定主攻方向并停止分散用力时调用；常见信号包括优先级过多、资源紧张、推进分散、需要决定先做什么。
   English: Trigger when limited resources are being split across too many tasks and one main target must be chosen. Use this skill to concentrate effort, sequence work decisively, and finish a meaningful breakthrough before expanding.
 ---
+input_spec:
+  required:
+    - 所有待处理任务清单
+  optional:
+    - shijian-contradiction-analysis 的主要矛盾
+    - 各任务的影响范围和难度评估
+output_spec:
+  format: |
+    任务优先级矩阵 + 主攻宣告（见操作规程）：
+    1. 任务清单（含影响范围/难度/依赖关系）
+    2. 🎯 主攻目标 + 原因 + 完成信号
+    3. 暂缓任务清单 + 暂缓原因
+  handoff_to:
+    - shijian-criticism-self-criticism（主攻完成后）
+    - shijian-contradiction-analysis（需要重新判断优先级时）
 
 # 集中兵力
 

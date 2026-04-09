@@ -4,6 +4,25 @@ description: |
   触发：当你提出了方案、假设或判断，需要通过实践验证、试错迭代或复盘升级认知时调用；常见信号包括 experiment、prototype、validate、iterate、feedback loop。
   English: Trigger when an idea, hypothesis, or plan must be tested in practice and improved through iteration. Use this skill to move from action to understanding and back to action in a spiral learning loop.
 ---
+input_spec:
+  required:
+    - 需要验证的方案/假说/判断
+  optional:
+    - shijian-contradiction-analysis 的主要矛盾
+    - shijian-investigation-first 的调查结论
+    - 之前的迭代记录
+output_spec:
+  format: |
+    实践-认识迭代报告：
+    1. 本轮实践内容
+    2. 感性认识（观察到的事实）
+    3. 理性认识（提炼的规律/判断）
+    4. 与上轮认识的差异
+    5. 下一轮行动
+  handoff_to:
+    - shijian-criticism-self-criticism（迭代结束时）
+    - shijian-contradiction-analysis（发现新矛盾时）
+    - shijian-investigation-first（认识不足时）
 
 # 实践认识论
 

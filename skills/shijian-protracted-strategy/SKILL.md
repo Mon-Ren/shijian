@@ -4,6 +4,24 @@ description: |
   触发：当目标长期、任务复杂、资源暂时处于劣势，或短期无法速胜但又不能放弃时调用；常见信号包括 long-term effort、phased plan、endurance、战略耐心、需要分阶段推进。
   English: Trigger when the work is long-horizon, difficult, and unlikely to be won quickly. Use this skill to divide the effort into stages, keep strategic confidence, and accumulate small wins into overall victory.
 ---
+input_spec:
+  required:
+    - 长期任务目标描述
+    - 当前态势（资源/能力/进展）
+  optional:
+    - shijian-contradiction-analysis 的主要矛盾
+    - shijian-spark-prairie-fire 的发展路线
+output_spec:
+  format: |
+    阶段评估表 + 行动计划（见操作规程）：
+    1. 当前阶段判断（防御/相持/反攻）+ 依据
+    2. 我方优劣势 + 关键障碍
+    3. 本阶段核心任务（1条）+ 禁止事项
+    4. 转入下一阶段的条件
+    5. 局部进攻点（当前可集中力量拿下的小目标）
+  handoff_to:
+    - shijian-concentrate-forces（每个阶段内的局部进攻）
+    - shijian-criticism-self-criticism（阶段转换时）
 
 # 持久战略
 

@@ -4,6 +4,24 @@ description: |
   触发：当你需要在多个目标、利益方或相互制约的指标之间做动态平衡时调用；常见信号包括 trade-offs、目标冲突、系统性约束、优化一项会伤害另一项。
   English: Trigger when several important goals must be advanced together and optimizing one dimension can damage another. Use this skill to map the key relationships, avoid one-sided decisions, and balance the system as a whole.
 ---
+input_spec:
+  required:
+    - 所有需要平衡的目标/维度清单
+    - 当前各维度的状态
+  optional:
+    - shijian-contradiction-analysis 的矛盾清单
+    - 各利益相关方的反馈
+output_spec:
+  format: |
+    辩证关系全景图 + 平衡方案（见操作规程）：
+    1. 辩证关系对清单（含当前偏向程度）
+    2. 片面性检查结果
+    3. 每对关系的平衡点 + 原因
+    4. 系统影响检查
+    5. 失衡预警指标
+  handoff_to:
+    - shijian-concentrate-forces（确定平衡点后的具体执行）
+    - shijian-practice-cognition（验证平衡方案）
 
 # 统筹兼顾
 

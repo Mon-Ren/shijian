@@ -4,6 +4,19 @@ description: |
   触发：当你准备下判断、做决策或提出建议，但事实、上下文或一手信息还不充分时优先调用；常见信号包括 unknowns、信息缺口、证据不足、领域陌生、需要先摸清现状。
   English: Trigger before making claims or decisions when context is incomplete, evidence is weak, or the domain is unfamiliar. Use this skill to investigate first, gather firsthand facts, and let reality shape the conclusion.
 ---
+input_spec:
+  required:
+    - 需要调查的具体问题
+  optional:
+    - 已有的上下文和假设
+    - 上游 skill 的输出（如 arming-thought 的路由决策）
+output_spec:
+  format: |
+    结构化调查结论（见操作规程步骤 4 的固定格式）
+  handoff_to:
+    - shijian-contradiction-analysis
+    - shijian-practice-cognition
+    - shijian-mass-line
 
 # 调查研究
 
@@ -25,6 +38,8 @@ description: |
 - 用户已经提供了完整的上下文和决策依据
 - 问题是技术实现细节，答案可以直接验证（运行代码看结果）
 - 紧急的修复任务且问题现象已经明确 —— 直接定位和修复，调查会浪费时间
+- 已有足够信息但需要多源交叉验证 → 用 shijian-mass-line 而非重新调查
+- 已有足够信息但需要多源交叉验证 —— 用 shijian-mass-line 而非重新调查
 
 ## 何时使用
 

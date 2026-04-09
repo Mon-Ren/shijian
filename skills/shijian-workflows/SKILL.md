@@ -4,6 +4,20 @@ description: |
   触发：当你面临的任务明显需要多个思想武器协作时调用；常见信号包括：从零启动新项目、攻坚复杂疑难问题、对已有方案进行迭代优化。此 skill 提供标准化的跨 skill 工作流组合，解决"应该先用哪个 skill、怎么衔接"的问题。
   English: Trigger when a task clearly requires multiple skills in sequence. Use this skill to select a standard workflow that chains skills together, defines data handoff between steps, and specifies termination conditions.
 ---
+input_spec:
+  required:
+    - 任务描述
+    - 当前阶段判断（新项目/疑难攻坚/迭代优化）
+  optional:
+    - 已有的调查结论、矛盾分析等上游输出
+output_spec:
+  format: |
+    按选定 workflow 的步骤顺序输出，
+    每步严格使用对应 skill 的输出模板，
+    步骤间显式传递数据（见数据传递规则）
+  handoff_to:
+    - workflow 内部各 skill
+    - shijian-criticism-self-criticism（workflow 结束时）
 
 # 工作流组合
 

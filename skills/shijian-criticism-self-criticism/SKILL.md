@@ -4,6 +4,22 @@ description: |
   触发：当一项工作已经完成、进入阶段验收、收到批评反馈，或反复出现同类错误需要系统纠偏时调用；常见信号包括 review、audit、retrospective、quality check、纠错与复盘。
   English: Trigger after delivery or at a review checkpoint when quality must be examined honestly and errors must be corrected without defensiveness. Use this skill for structured self-review, feedback processing, and continuous correction.
 ---
+input_spec:
+  required:
+    - 已完成的工作成果
+    - 执行过程记录
+  optional:
+    - 用户反馈/批评
+    - 各上游 skill 的输出
+output_spec:
+  format: |
+    工作审视报告：
+    1. 自我批评（问题清单 + 根因）
+    2. 方法论审查（skill 调用情况、输出规范性）
+    3. 改进计划（具体可操作的改进项）
+  handoff_to:
+    - shijian-practice-cognition（需要重新验证时）
+    - shijian-contradiction-analysis（发现新问题时）
 
 # 批评与自我批评
 
@@ -138,6 +154,18 @@ description: |
 - 表面接受实际不改
 
 这是最危险的倾向——错误只会越积越多。
+
+## 方法论应用审查（附加维度）
+
+在输出工作审视报告时，额外增加一项方法论审查：
+
+| 审查项 | 说明 |
+|--------|------|
+| 本次调用了哪些 skill？ | 列出实际调用的 shijian skill |
+| 调用时机对不对？ | 是否该调用时没调用，不该调用时调了？ |
+| 输出格式是否符合规范？ | 是否按照各 skill 的输出模板执行？ |
+| 有无遗漏的关键步骤？ | 比如跳过了调查就直接下结论 |
+| 下次同类任务应如何改进？ | 具体的方法论改进项 |
 
 ## 常见错误
 

@@ -4,6 +4,20 @@ description: |
   触发：当你需要从多个信息源（代码、文档、日志、测试结果、用户反馈等）收集信息、交叉验证、把零散反馈整合成可执行方案时调用。本质是多源信息汇聚+交叉验证方法论。常见信号包括：需要交叉验证、多源比对、意见汇总、信息整合。
   English: Trigger when input must be gathered from many people, synthesized into a clearer plan, and returned to the affected users or executors for validation. Use this skill for a collect-synthesize-validate loop.
 ---
+input_spec:
+  required:
+    - 需要验证的方案/判断/假设
+    - 至少 2 个可用信息源
+  optional:
+    - 用户的明确反馈
+    - 上游 skill 的输出
+output_spec:
+  format: |
+    综合判断 + 信息源交叉验证结果（见操作规程步骤 4 的固定格式）
+  handoff_to:
+    - shijian-contradiction-analysis
+    - shijian-practice-cognition
+    - shijian-criticism-self-criticism
 
 # 群众路线
 
@@ -36,6 +50,7 @@ description: |
 - 已经完成了充分的多源信息收集，处于执行阶段
 - 紧急修复且问题来源明确 —— 不需要多源汇聚
 - 用户是唯一信息源且其输入已经足够精确（如"帮我修改第3行的变量名"）
+- 进入一个完全陌生的领域，还没有任何信息源 → 先用 shijian-investigation-first 摸底
 
 ## 何时使用
 

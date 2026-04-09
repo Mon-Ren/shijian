@@ -4,6 +4,24 @@ description: |
   触发：当你从零起步、资源极少、需要先找到最小可行切入口并建立稳定根据地时调用；常见信号包括 bootstrap、MVP、pilot、first foothold、小团队起步。
   English: Trigger when starting from almost nothing and needing a viable foothold before scaling up. Use this skill to build a durable base, start small, and grow from a validated nucleus instead of scattering effort.
 ---
+input_spec:
+  required:
+    - 项目/任务目标描述
+    - 当前可用资源清单
+  optional:
+    - shijian-investigation-first 的调查结论
+    - shijian-contradiction-analysis 的主要矛盾
+output_spec:
+  format: |
+    根据地选择分析 + 发展路线图（见操作规程）：
+    1. 客观条件评估（需求/基础/障碍/条件判断）
+    2. 根据地选择 + 理由
+    3. 流寇主义检查清单
+    4. 3 步发展路线图（每步有成功标志）
+  handoff_to:
+    - shijian-protracted-strategy（纳入长期战略）
+    - shijian-concentrate-forces（在根据地上集中力量）
+    - shijian-practice-cognition（验证根据地稳固性）
 
 # 星火燎原
 

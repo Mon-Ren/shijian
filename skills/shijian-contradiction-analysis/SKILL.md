@@ -4,6 +4,25 @@ description: |
   触发：当问题复杂、存在多个冲突因素、优先级不清，或你不知道应该先解决什么时调用；常见信号包括 trade-off、瓶颈、根因不明、主次不清、多个问题互相牵制。
   English: Trigger when a problem contains competing forces, unclear priorities, or no obvious entry point. Use this skill to identify contradictions, isolate the principal contradiction, classify its nature, and choose the right response.
 ---
+input_spec:
+  required:
+    - 当前情境描述（问题、约束、已知事实）
+  optional:
+    - shijian-investigation-first 的调查结论
+    - shijian-mass-line 的多源反馈
+output_spec:
+  format: |
+    矛盾分析表（6 步，见操作规程）：
+    1. 矛盾清单（[A] vs [B]）
+    2. ⭐ 主要矛盾 + 理由
+    3. 主要矛盾的主要方面
+    4. 矛盾性质（对抗性/非对抗性）
+    5. 解决方法 + 下一步行动
+    6. ⚠️ 监控提示
+  handoff_to:
+    - shijian-concentrate-forces（解决主要矛盾）
+    - shijian-practice-cognition（验证结论）
+    - shijian-overall-planning（多矛盾平衡）
 
 # 矛盾分析法
 
