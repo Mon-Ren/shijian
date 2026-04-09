@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>shijian — 实践方法论工具集</title>
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #141414;
+    --border: #222;
+    --text: #e4e4e7;
+    --muted: #71717a;
+    --accent: #f97316;
+    --accent2: #fb923c;
+    --green: #22c55e;
+    --blue: #3b82f6;
+    --purple: #a855f7;
+    --red: #ef4444;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* Hero */
+  .hero {
+    min-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 4rem 2rem;
+    background: radial-gradient(ellipse at 50% 0%, rgba(249,115,22,0.08) 0%, transparent 60%);
+  }
+  .hero h1 {
+    font-size: clamp(3rem, 8vw, 6rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    background: linear-gradient(135deg, var(--text) 0%, var(--muted) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.5rem;
+  }
+  .hero .subtitle {
+    font-size: clamp(1rem, 2.5vw, 1.4rem);
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+  }
+  .hero .tagline {
+    font-size: clamp(1.1rem, 3vw, 1.6rem);
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 2rem;
+  }
+  .hero .desc {
+    max-width: 560px;
+    color: var(--muted);
+    font-size: 1.05rem;
+    margin-bottom: 2.5rem;
+  }
+  .install-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.2rem 1.8rem;
+    text-align: left;
+    min-width: 320px;
+    max-width: 520px;
+  }
+  .install-box .label {
+    font-size: 0.75rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.5rem;
+  }
+  .install-box code {
+    font-family: "SF Mono", "Fira Code", "JetBrains Mono", monospace;
+    font-size: 0.9rem;
+    color: var(--green);
+    word-break: break-all;
+  }
+  .install-box .sep {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 0.8rem 0;
+  }
+
+  /* Section */
+  section {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+  }
+  section h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
+  }
+  section h2 .emoji { margin-right: 0.4rem; }
+  section .section-desc {
+    color: var(--muted);
+    margin-bottom: 2rem;
+    font-size: 1rem;
+  }
+
+  /* Problem cards */
+  .problems {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1rem;
+  }
+  .problem-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.2rem;
+  }
+  .problem-card .icon { font-size: 1.4rem; margin-bottom: 0.5rem; }
+  .problem-card h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.3rem; }
+  .problem-card p { font-size: 0.85rem; color: var(--muted); }
+
+  /* Architecture */
+  .arch {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 2rem;
+    font-family: "SF Mono", "Fira Code", monospace;
+    font-size: 0.85rem;
+    line-height: 1.9;
+    color: var(--muted);
+    overflow-x: auto;
+  }
+  .arch .hl { color: var(--accent); font-weight: 600; }
+  .arch .hl2 { color: var(--blue); }
+  .arch .hl3 { color: var(--green); }
+  .arch .hl4 { color: var(--purple); }
+
+  /* Skill grid */
+  .skill-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+  .skill-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.2rem 1.4rem;
+    transition: border-color 0.2s;
+  }
+  .skill-card:hover { border-color: var(--accent); }
+  .skill-card .skill-name {
+    font-family: "SF Mono", "Fira Code", monospace;
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-bottom: 0.3rem;
+  }
+  .skill-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.3rem; }
+  .skill-card p { font-size: 0.85rem; color: var(--muted); }
+  .skill-card .tag {
+    display: inline-block;
+    font-size: 0.7rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    margin-top: 0.5rem;
+    font-weight: 500;
+  }
+  .tag-router { background: rgba(249,115,22,0.15); color: var(--accent); }
+  .tag-philosophy { background: rgba(59,130,246,0.15); color: var(--blue); }
+  .tag-method { background: rgba(34,197,94,0.15); color: var(--green); }
+  .tag-strategy { background: rgba(168,85,247,0.15); color: var(--purple); }
+  .tag-orchestration { background: rgba(239,68,68,0.15); color: var(--red); }
+
+  /* Footer */
+  footer {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: var(--muted);
+    font-size: 0.85rem;
+    border-top: 1px solid var(--border);
+  }
+  footer a { color: var(--muted); }
+  footer a:hover { color: var(--text); }
+
+  @media (max-width: 640px) {
+    .install-box { min-width: auto; width: 100%; }
+    .hero { min-height: 60vh; padding: 3rem 1.5rem; }
+    section { padding: 3rem 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>shijian</h1>
+  <div class="subtitle">/ ʂɨ̌tɕiɛ̂n /</div>
+  <div class="tagline">实践 × 时间</div>
+  <div class="desc">
+    AI Agent 方法论工具集。不是 prompt 工程，不是角色扮演。<br>
+    是一套让 AI 先看事实再下判断、先搞清楚再动手、做完之后会复盘的结构化方法论。
+  </div>
+  <div class="install-box">
+    <div class="label">macOS / Linux</div>
+    <code>curl -fsSL https://raw.githubusercontent.com/Mon-Ren/shijian/main/install.sh | sh</code>
+    <hr class="sep">
+    <div class="label">Windows</div>
+    <code>iex (iwr -useb https://raw.githubusercontent.com/Mon-Ren/shijian/main/install.ps1).Content</code>
+    <hr class="sep">
+    <div class="label">OpenClaw Skill Pack</div>
+    <code><a href="https://github.com/Mon-Ren/shijian">github.com/Mon-Ren/shijian</a></code>
+  </div>
+</div>
+
+<section>
+  <h2><span class="emoji">🩺</span>AI 的通病</h2>
+  <div class="section-desc">当前的 AI Agent 会思考，但不会"想问题"。</div>
+  <div class="problems">
+    <div class="problem-card">
+      <div class="icon">🌀</div>
+      <h3>抓不住重点</h3>
+      <p>面对复杂问题，胡子眉毛一把抓，分不清主次。</p>
+    </div>
+    <div class="problem-card">
+      <div class="icon">🗣️</div>
+      <h3>不调查就下结论</h3>
+      <p>信息不充分就急着给答案，犯教条主义错误。</p>
+    </div>
+    <div class="problem-card">
+      <div class="icon">😴</div>
+      <h3>做完不自查</h3>
+      <p>"差不多就行了"，缺乏验证和复盘的习惯。</p>
+    </div>
+    <div class="problem-card">
+      <div class="icon">🏳️</div>
+      <h3>遇难即退</h3>
+      <p>第一次碰壁就说"超出能力范围"，缺乏持续推进力。</p>
+    </div>
+    <div class="problem-card">
+      <div class="icon">🎯</div>
+      <h3>同时做十件事</h3>
+      <p>什么都想做，件件做不好，不懂集中兵力。</p>
+    </div>
+    <div class="problem-card">
+      <div class="icon">📋</div>
+      <h3>只会执行不会想</h3>
+      <p>用户说什么就做什么，没有自己的分析和判断。</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2><span class="emoji">🏗️</span>架构</h2>
+  <div class="section-desc">不是一堆零散的 skill 拼凑，而是一座有层次的方法论体系。</div>
+  <div class="arch">
+<span class="hl">总原则：实事求是</span> ← SOUL.md 常驻，每次对话自动生效
+    │
+    ▼
+<span class="hl2">第一层 · 哲学基座</span> ── 分析问题的底层框架
+  ├── 矛盾分析法 — 找主要矛盾
+  └── 实践认识论 — 迭代验证
+    │
+    ▼
+<span class="hl3">第二层 · 工作方法</span> ── 日常工作的基本方法
+  ├── 调查研究 — 先搞清楚再说
+  ├── 多源汇聚 — 交叉验证
+  └── 质量审查 — 做完会复盘
+    │
+    ▼
+<span class="hl4">第三层 · 战略战术</span> ── 具体任务的行动指导
+  ├── 持久战略 — 长跑不急
+  ├── 集中兵力 — 聚焦不散
+  ├── 星火燎原 — 从小做起
+  └── 统筹兼顾 — 多目标平衡
+    │
+    ▼
+编排层：工作流组合 ── 多个 skill 的标准串联
+  </div>
+</section>
+
+<section>
+  <h2><span class="emoji">🧰</span>11 个 Skill</h2>
+  <div class="section-desc">每个 skill 都有明确的触发条件、操作流程和输出格式。不是每个问题都要全部加载。</div>
+  <div class="skill-grid">
+    <div class="skill-card">
+      <div class="skill-name">shijian-arming-thought</div>
+      <h3>🧭 总路由器</h3>
+      <p>建立"实事求是"总原则，按需调度下游 skill。</p>
+      <span class="tag tag-router">入口</span>
+    </div>
+    <div class="skill-card">
+      <div class="skill-name">shijian-contradiction-analysis</div>
+      <h3>⚔️ 矛盾分析法</h3>
+      <p>识别矛盾、找主要矛盾、区分性质、选择方法。输出结构化分析表。</p>
+      <span class="tag tag-philosophy">哲学基座</span>
+    </div>
+    <div class="skill-card">
+      <div class="skill-name">shijian-practice-cognition</div>
+      <h3>🔄 实践认识论</h3>
+      <p>实践→认识→再实践的螺旋上升。方案验证与迭代改进。</p>
+      <span class="tag tag-philosophy">哲学基座</span>
+    </div>
+    <div class="skill-card">
+      <div class="skill-name">shijian-investigation-first</div>
+      <h3>🔎 调查研究</h3>
+      <p>先调查后发言。深入一线获取第一手资料，让事实规定判断。</p>
+      <span class="tag tag-method">工作方法</span>
+    </div>
+    <div class="skill-card">
+      <div class="skill-name">shijian-mass-line</div>
+      <h3>👥 多源汇聚</h3>
+      <p>从代码、日志、文档、测试等多源收集信息，交叉验证后形成判断。</p>
+      <span class="tag tag-method">工作方法</span>
+    </div>
+    <div class="skill-card">
+      <div class="skill-name">shijian-criticism-self-criticism</div>
+      <h3>🪞 质量审查</h3>
+      <p>工作审视报告：目标完成情况、问题表、根因分析、改进建议。</p>
+      <span class="tag tag-method">工作方法</span>
+    </div>
+    <div class="skill-card">
+      <div class="skill-name">shijian-protracted-strategy</div>
+      <h3>⏳ 持久战略</h3>
+      <p>防御→相持→反攻三阶段。既不急于求成，也不畏难放弃。</p>
+      <span class="tag tag-strategy">战略战术</span>
+    </div>
+    <div class="skill-card">
+      <div class="skill-name">shijian-concentrate-forces</div>
+      <h3>🎯 集中兵力</h3>
+      <p>"伤其十指不如断其一指"。一次聚焦一个目标，彻底解决再转向。</p>
+      <span class="tag tag-strategy">战略战术</span>
+    </div>
+    <div class="skill-card">
+      <div class="skill-name">shijian-spark-prairie-fire</div>
+      <h3>🔥 星火燎原</h3>
+      <p>建立根据地，不做流寇。从最小可行切入点开始，积小胜为大胜。</p>
+      <span class="tag tag-strategy">战略战术</span>
+    </div>
+    <div class="skill-card">
+      <div class="skill-name">shijian-overall-planning</div>
+      <h3>⚖️ 统筹兼顾</h3>
+      <p>识别辩证关系对，在多目标之间找动态平衡，拒绝片面性。</p>
+      <span class="tag tag-strategy">战略战术</span>
+    </div>
+    <div class="skill-card">
+      <div class="skill-name">shijian-workflows</div>
+      <h3>🔗 工作流组合</h3>
+      <p>新项目启动、复杂问题攻坚、方案迭代优化——三条标准化串联流程。</p>
+      <span class="tag tag-orchestration">编排层</span>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2><span class="emoji">⚡</span>兼容性</h2>
+  <div class="section-desc">
+    纯 Markdown，零依赖，全平台兼容。<br>
+    sub-agent prompt 兼容 OpenClaw <code>sessions_spawn</code>，可按需派遣执行专项分析。
+  </div>
+</section>
+
+<footer>
+  <p>shijian — 实践 × 时间 &nbsp;·&nbsp; <a href="https://github.com/Mon-Ren/shijian">GitHub</a> &nbsp;·&nbsp; MIT License</p>
+</footer>
+
+</body>
+</html>
