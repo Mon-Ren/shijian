@@ -766,10 +766,25 @@ footer a:hover{color:var(--gold);text-decoration:none}
 })();
 
 /* ── Scroll reveal ── */
+const revealEls=document.querySelectorAll('.reveal');
 const obs=new IntersectionObserver((entries)=>{
   entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)}});
-},{threshold:.15});
-document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+},{threshold:.05,rootMargin:'50px'});
+revealEls.forEach(el=>{
+  // immediately reveal elements already in viewport
+  const rect=el.getBoundingClientRect();
+  if(rect.top<innerHeight&&rect.bottom>0){el.classList.add('visible')}
+  else{obs.observe(el)}
+});
+// also re-check on hash navigation
+addEventListener('hashchange',()=>{
+  revealEls.forEach(el=>{
+    if(!el.classList.contains('visible')){
+      const rect=el.getBoundingClientRect();
+      if(rect.top<innerHeight&&rect.bottom>0){el.classList.add('visible')}
+    }
+  });
+});
 
 /* ── Copy command ── */
 function copyCmd(btn,text){
@@ -847,9 +862,15 @@ function filterSkills(cat,btn){
 /* ── Nav show on scroll past hero ── */
 const nav=document.querySelector('.nav');
 let navShown=false;
+function showNav(){nav.style.transform='translateY(0)';navShown=true}
+function hideNav(){nav.style.transform='translateY(-100%)';navShown=false}
 addEventListener('scroll',()=>{
-  if(scrollY>innerHeight*.5&&!navShown){nav.style.transform='translateY(0)';navShown=true}
-  else if(scrollY<innerHeight*.3&&navShown){nav.style.transform='translateY(-100%)';navShown=false}
+  if(scrollY>innerHeight*.5&&!navShown)showNav();
+  else if(scrollY<innerHeight*.3&&navShown)hideNav();
+});
+// show nav on any click
+document.addEventListener('click',(e)=>{
+  if(e.target.closest('.nav-links')){showNav()}
 });
 </script>
 </body>
