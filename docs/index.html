@@ -6,86 +6,112 @@
 <title>shijian — 实践方法论工具集</title>
 <style>
   :root {
-    --bg: #0a0a0a;
-    --surface: #141414;
-    --border: #222;
-    --text: #e4e4e7;
-    --muted: #71717a;
-    --accent: #dc2626;
-    --accent2: #ef4444;
-    --green: #22c55e;
-    --blue: #3b82f6;
-    --purple: #a855f7;
-    --red: #ef4444;
+    --red: #DE2910;
+    --red-dark: #8B0000;
+    --red-deep: #5C0000;
+    --gold: #FFDE00;
+    --gold-dim: #C5A600;
+    --bg: #0D0000;
+    --surface: #1A0505;
+    --surface2: #220808;
+    --border: #3A1010;
+    --border-hi: #6B1A1A;
+    --text: #F0E0E0;
+    --muted: #9A7A7A;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
     background: var(--bg);
     color: var(--text);
     line-height: 1.7;
     -webkit-font-smoothing: antialiased;
   }
-  a { color: var(--accent); text-decoration: none; }
-  a:hover { text-decoration: underline; }
+  a { color: var(--gold); text-decoration: none; }
+  a:hover { color: var(--gold-dim); text-decoration: underline; }
+  code {
+    font-family: "SF Mono", "Fira Code", "JetBrains Mono", "Noto Sans Mono CJK SC", monospace;
+  }
 
-  /* Hero */
+  /* ── Hero ── */
   .hero {
-    min-height: 80vh;
+    min-height: 90vh;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
     padding: 4rem 2rem;
-    background: radial-gradient(ellipse at 50% 0%, rgba(220,38,38,0.1) 0%, transparent 60%);
+    background:
+      radial-gradient(ellipse at 50% 30%, rgba(222,41,16,0.15) 0%, transparent 55%),
+      radial-gradient(ellipse at 50% 80%, rgba(139,0,0,0.1) 0%, transparent 50%),
+      var(--bg);
+    border-bottom: 1px solid var(--border);
+  }
+  .hero .star {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    filter: drop-shadow(0 0 20px rgba(255,222,0,0.3));
   }
   .hero h1 {
-    font-size: clamp(3rem, 8vw, 6rem);
-    font-weight: 800;
-    letter-spacing: -0.03em;
-    background: linear-gradient(135deg, var(--text) 0%, var(--muted) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-bottom: 0.5rem;
+    font-size: clamp(3.5rem, 10vw, 7rem);
+    font-weight: 900;
+    letter-spacing: 0.05em;
+    color: var(--red);
+    text-shadow: 0 0 60px rgba(222,41,16,0.3);
+    margin-bottom: 0.3rem;
   }
-  .hero .subtitle {
-    font-size: clamp(1rem, 2.5vw, 1.4rem);
+  .hero .pinyin {
+    font-size: clamp(0.9rem, 2vw, 1.2rem);
     color: var(--muted);
+    letter-spacing: 0.2em;
     margin-bottom: 0.5rem;
   }
   .hero .tagline {
-    font-size: clamp(1.1rem, 3vw, 1.6rem);
-    font-weight: 600;
-    color: var(--accent);
+    font-size: clamp(1.3rem, 3.5vw, 2rem);
+    font-weight: 700;
+    color: var(--gold);
     margin-bottom: 2rem;
+    letter-spacing: 0.1em;
+  }
+  .hero .quote {
+    max-width: 500px;
+    font-size: 1rem;
+    color: var(--muted);
+    font-style: italic;
+    border-left: 3px solid var(--red);
+    padding-left: 1rem;
+    margin: 0 auto 2.5rem;
+    text-align: left;
   }
   .hero .desc {
     max-width: 560px;
     color: var(--muted);
-    font-size: 1.05rem;
+    font-size: 1rem;
     margin-bottom: 2.5rem;
   }
+
+  /* Install box */
   .install-box {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 1.2rem 1.8rem;
+    border-radius: 8px;
+    padding: 1.4rem 2rem;
     text-align: left;
     min-width: 320px;
-    max-width: 520px;
+    max-width: 540px;
   }
   .install-box .label {
-    font-size: 0.75rem;
-    color: var(--muted);
+    font-size: 0.7rem;
+    color: var(--gold-dim);
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.12em;
     margin-bottom: 0.5rem;
+    font-weight: 600;
   }
   .install-box code {
-    font-family: "SF Mono", "Fira Code", "JetBrains Mono", monospace;
-    font-size: 0.9rem;
-    color: var(--green);
+    font-size: 0.85rem;
+    color: var(--text);
     word-break: break-all;
   }
   .install-box .sep {
@@ -94,7 +120,7 @@
     margin: 0.8rem 0;
   }
 
-  /* Section */
+  /* ── Section ── */
   section {
     max-width: 960px;
     margin: 0 auto;
@@ -102,18 +128,18 @@
   }
   section h2 {
     font-size: 1.8rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-    letter-spacing: -0.02em;
+    font-weight: 800;
+    margin-bottom: 0.4rem;
+    color: var(--red);
+    letter-spacing: 0.03em;
   }
-  section h2 .emoji { margin-right: 0.4rem; }
   section .section-desc {
     color: var(--muted);
     margin-bottom: 2rem;
     font-size: 1rem;
   }
 
-  /* Problem cards */
+  /* ── Problem cards ── */
   .problems {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -122,31 +148,32 @@
   .problem-card {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 10px;
+    border-radius: 8px;
     padding: 1.2rem;
+    transition: border-color 0.2s;
   }
-  .problem-card .icon { font-size: 1.4rem; margin-bottom: 0.5rem; }
+  .problem-card:hover { border-color: var(--border-hi); }
+  .problem-card .icon { font-size: 1.3rem; margin-bottom: 0.4rem; }
   .problem-card h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.3rem; }
   .problem-card p { font-size: 0.85rem; color: var(--muted); }
 
-  /* Architecture */
+  /* ── Architecture ── */
   .arch {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: 8px;
     padding: 2rem;
-    font-family: "SF Mono", "Fira Code", monospace;
     font-size: 0.85rem;
-    line-height: 1.9;
+    line-height: 2;
     color: var(--muted);
     overflow-x: auto;
   }
-  .arch .hl { color: var(--accent); font-weight: 600; }
-  .arch .hl2 { color: var(--blue); }
-  .arch .hl3 { color: var(--green); }
-  .arch .hl4 { color: var(--purple); }
+  .arch .hl  { color: var(--red); font-weight: 700; }
+  .arch .hl2 { color: var(--gold); font-weight: 600; }
+  .arch .hl3 { color: #E8655A; }
+  .arch .hl4 { color: #F59E6C; }
 
-  /* Skill grid */
+  /* ── Skill grid ── */
   .skill-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -155,14 +182,13 @@
   .skill-card {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 10px;
+    border-radius: 8px;
     padding: 1.2rem 1.4rem;
-    transition: border-color 0.2s;
+    transition: border-color 0.2s, background 0.2s;
   }
-  .skill-card:hover { border-color: var(--accent); }
+  .skill-card:hover { border-color: var(--red); background: var(--surface2); }
   .skill-card .skill-name {
-    font-family: "SF Mono", "Fira Code", monospace;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: var(--muted);
     margin-bottom: 0.3rem;
   }
@@ -170,19 +196,20 @@
   .skill-card p { font-size: 0.85rem; color: var(--muted); }
   .skill-card .tag {
     display: inline-block;
-    font-size: 0.7rem;
+    font-size: 0.68rem;
     padding: 0.15rem 0.5rem;
-    border-radius: 4px;
+    border-radius: 3px;
     margin-top: 0.5rem;
-    font-weight: 500;
+    font-weight: 600;
+    letter-spacing: 0.05em;
   }
-  .tag-router { background: rgba(220,38,38,0.2); color: var(--accent); }
-  .tag-philosophy { background: rgba(59,130,246,0.15); color: var(--blue); }
-  .tag-method { background: rgba(34,197,94,0.15); color: var(--green); }
-  .tag-strategy { background: rgba(168,85,247,0.15); color: var(--purple); }
-  .tag-orchestration { background: rgba(239,68,68,0.15); color: var(--red); }
+  .tag-router      { background: rgba(222,41,16,0.2); color: var(--red); }
+  .tag-philosophy  { background: rgba(255,222,0,0.12); color: var(--gold); }
+  .tag-method      { background: rgba(232,101,90,0.15); color: #E8655A; }
+  .tag-strategy    { background: rgba(245,158,108,0.15); color: #F59E6C; }
+  .tag-orchestration { background: rgba(255,222,0,0.08); color: var(--gold-dim); }
 
-  /* Footer */
+  /* ── Footer ── */
   footer {
     text-align: center;
     padding: 3rem 2rem;
@@ -191,11 +218,11 @@
     border-top: 1px solid var(--border);
   }
   footer a { color: var(--muted); }
-  footer a:hover { color: var(--text); }
+  footer a:hover { color: var(--gold); text-decoration: none; }
 
   @media (max-width: 640px) {
     .install-box { min-width: auto; width: 100%; }
-    .hero { min-height: 60vh; padding: 3rem 1.5rem; }
+    .hero { min-height: 70vh; padding: 3rem 1.5rem; }
     section { padding: 3rem 1.5rem; }
   }
 </style>
@@ -203,9 +230,14 @@
 <body>
 
 <div class="hero">
+  <div class="star">★</div>
   <h1>shijian</h1>
-  <div class="subtitle">/ ʂɨ̌tɕiɛ̂n /</div>
-  <div class="tagline">实践 × 时间</div>
+  <div class="pinyin">/ ʂɨ̌tɕiɛ̂n /</div>
+  <div class="tagline">实 践 × 时 间</div>
+  <div class="quote">
+    "实践、认识、再实践、再认识，这种形式，循环往复以至无穷。"<br>
+    —— 毛泽东《实践论》
+  </div>
   <div class="desc">
     AI Agent 方法论工具集。不是 prompt 工程，不是角色扮演。<br>
     是一套让 AI 先看事实再下判断、先搞清楚再动手、做完之后会复盘的结构化方法论。
@@ -217,13 +249,13 @@
     <div class="label">Windows</div>
     <code>iex (iwr -useb https://raw.githubusercontent.com/Mon-Ren/shijian/main/install.ps1).Content</code>
     <hr class="sep">
-    <div class="label">OpenClaw Skill Pack</div>
+    <div class="label">仓库</div>
     <code><a href="https://github.com/Mon-Ren/shijian">github.com/Mon-Ren/shijian</a></code>
   </div>
 </div>
 
 <section>
-  <h2><span class="emoji">🩺</span>AI 的通病</h2>
+  <h2>🩺 AI 的通病</h2>
   <div class="section-desc">当前的 AI Agent 会思考，但不会"想问题"。</div>
   <div class="problems">
     <div class="problem-card">
@@ -260,7 +292,7 @@
 </section>
 
 <section>
-  <h2><span class="emoji">🏗️</span>架构</h2>
+  <h2>🏗️ 架构</h2>
   <div class="section-desc">不是一堆零散的 skill 拼凑，而是一座有层次的方法论体系。</div>
   <div class="arch">
 <span class="hl">总原则：实事求是</span> ← SOUL.md 常驻，每次对话自动生效
@@ -289,7 +321,7 @@
 </section>
 
 <section>
-  <h2><span class="emoji">🧰</span>11 个 Skill</h2>
+  <h2>🧰 11 个 Skill</h2>
   <div class="section-desc">每个 skill 都有明确的触发条件、操作流程和输出格式。不是每个问题都要全部加载。</div>
   <div class="skill-grid">
     <div class="skill-card">
@@ -362,7 +394,7 @@
 </section>
 
 <section>
-  <h2><span class="emoji">⚡</span>兼容性</h2>
+  <h2>⚡ 兼容性</h2>
   <div class="section-desc">
     纯 Markdown，零依赖，全平台兼容。<br>
     sub-agent prompt 兼容 OpenClaw <code>sessions_spawn</code>，可按需派遣执行专项分析。
@@ -370,7 +402,7 @@
 </section>
 
 <footer>
-  <p>shijian — 实践 × 时间 &nbsp;·&nbsp; <a href="https://github.com/Mon-Ren/shijian">GitHub</a> &nbsp;·&nbsp; MIT License</p>
+  <p>★ shijian — 实践 × 时间 &nbsp;·&nbsp; <a href="https://github.com/Mon-Ren/shijian">GitHub</a> &nbsp;·&nbsp; MIT License ★</p>
 </footer>
 
 </body>
