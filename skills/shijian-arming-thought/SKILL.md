@@ -112,6 +112,73 @@ output_spec:
       └─ 工作已完成需要审视？ → criticism-self-criticism
 ```
 
+## 任务复杂度预评估
+
+在分类协议的 3 个问题之后、最终路由之前，增加复杂度评估，决定**加载深度**：
+
+### 复杂度评估矩阵
+
+| 维度 | 简单（1 分） | 中等（2 分） | 复杂（3 分） |
+|------|------------|------------|------------|
+| 涉及因素 | 1–2 个，关系清晰 | 3–5 个，有交互 | 5+ 个，互相牵制 |
+| 信息完整度 | 充分，可直接执行 | 部分缺失，需补充 | 大量未知，需系统调查 |
+| 决策风险 | 低，做错可轻松回退 | 中，有影响但可控 | 高，代价大或不可逆 |
+| 预期步骤数 | 1–3 步可完成 | 需要 1 个 skill 辅助 | 需要多个 skill 协作 |
+
+**评分规则：** 4 项加总。
+
+| 总分 | 复杂度等级 | 推荐加载深度 |
+|------|----------|------------|
+| 4–6 分 | 简单 | 不加载或仅吸收"实事求是"原则 |
+| 7–9 分 | 中等 | 加载 1 个最匹配的 skill |
+| 10–12 分 | 复杂 | 走完整 workflow |
+
+**附加规则：** 无论总分多少，只要"决策风险"为高（3 分），就必须走完整流程 + criticism-self-criticism 复盘。
+
+## Skill 选择区分器
+
+以下 skill 对容易混淆，用这个速查表做选择：
+
+### investigation-first vs mass-line
+
+| 你的情况 | 选择 |
+|---------|------|
+| 第一次接触这个问题，完全不了解现状 | **investigation-first**（先摸底） |
+| 已经有了一些信息，需要从多个来源交叉验证 | **mass-line**（多源汇聚） |
+| 两者都需要 | 先 investigation-first 摸底，再 mass-line 验证 |
+
+### contradiction-analysis vs overall-planning
+
+| 你的情况 | 选择 |
+|---------|------|
+| 需要找"哪个问题最关键"，集中解决 | **contradiction-analysis**（找主要矛盾） |
+| 多个目标都重要，需要动态平衡不能只抓一个 | **overall-planning**（统筹兼顾） |
+| 先找主要矛盾，发现多个都重要 | 先 contradiction-analysis，结论触发 overall-planning |
+
+### concentrate-forces vs protracted-strategy
+
+| 你的情况 | 选择 |
+|---------|------|
+| 有多个任务，需要决定"先做哪个" | **concentrate-forces**（聚焦打法） |
+| 任务需要很长时间，短期内做不完 | **protracted-strategy**（长跑策略） |
+| 长期任务中每一阶段要聚焦 | protracted-strategy 定阶段，concentrate-forces 做执行 |
+
+### spark-prairie-fire vs protracted-strategy
+
+| 你的情况 | 选择 |
+|---------|------|
+| 从零开始，资源极少，需要找切入点 | **spark-prairie-fire**（建立根据地） |
+| 已经起步，需要分阶段推进到最终目标 | **protracted-strategy**（持久战略） |
+| 从零开始做到最终目标 | 先 spark-prairie-fire 找根据地，再 protracted-strategy 定阶段 |
+
+### practice-cognition vs criticism-self-criticism
+
+| 你的情况 | 选择 |
+|---------|------|
+| 有方案/假说，需要验证对不对 | **practice-cognition**（实践验证） |
+| 工作已经做完，需要审视质量 | **criticism-self-criticism**（质量复盘） |
+| 验证完发现有新问题 | practice-cognition → 重新实践 |
+
 ## 何时走 Workflow 而非单 Skill
 
 当任务同时触发了分类协议中 3 个或更多 skill 时，应走 workflow 而非单独调用：
