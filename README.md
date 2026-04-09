@@ -20,16 +20,28 @@ shijian 要解决的就是这些——**怎么想问题、怎么做事情**。
 
 ## 安装
 
+### macOS / Linux（一键）
+
 ```bash
-# 克隆仓库
-git clone https://github.com/Mon-Ren/shijian.git /tmp/shijian
-
-# 复制 skill 到 OpenClaw
-cp -r /tmp/shijian/skills/shijian-* ~/.openclaw/skills/
-
-# 可选：启用常驻"求是"行为约束
-# 将 SOUL-patch.md 中的内容合并到你的 ~/.openclaw/workspace/SOUL.md
+curl -fsSL https://raw.githubusercontent.com/Mon-Ren/shijian/main/install.sh | sh
 ```
+
+### Windows（一键，PowerShell）
+
+```powershell
+iex (iwr -useb https://raw.githubusercontent.com/Mon-Ren/shijian/main/install.ps1).Content
+```
+
+### 手动安装
+
+```bash
+git clone https://github.com/Mon-Ren/shijian.git /tmp/shijian
+cp -r /tmp/shijian/skills/shijian-* ~/.openclaw/skills/
+```
+
+### 可选：启用常驻行为约束
+
+将 `SOUL-patch.md` 中的"求是"段落合并到你的 `~/.openclaw/workspace/SOUL.md`，让 AI 在每次对话中自动遵守"先看事实再下判断"的行为准则。
 
 安装后重启 OpenClaw 即可生效。
 
